@@ -6,8 +6,16 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import dev.rakamin.newsapp.model.Article
+import dev.rakamin.newsapp.model.Source
+import dev.rakamin.newsapp.viewmodel.ArticleViewModel
+import kotlinx.coroutines.launch
 
 class DetailActivity : AppCompatActivity() {
 
@@ -20,18 +28,24 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var contentTextView: TextView
     private lateinit var readMoreButton: Button
     private lateinit var backButton: ImageButton
+    private lateinit var fabFavorite: FloatingActionButton
 
-    private var articleUrl: String? = null
+    private lateinit var viewModel: ArticleViewModel
+    private var currentArticle: Article? = null
+    private var isFavorite = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        // Sembunyikan action bar karena kita pakai custom back button
         supportActionBar?.hide()
+
+        viewModel = ViewModelProvider(this)[ArticleViewModel::class.java]
 
         initViews()
         displayArticle()
+        checkFavoriteStatus()
+        setupFavoriteButton()
     }
 
     private fun initViews() {
@@ -44,14 +58,14 @@ class DetailActivity : AppCompatActivity() {
         contentTextView = findViewById(R.id.textContent)
         readMoreButton = findViewById(R.id.btnReadMore)
         backButton = findViewById(R.id.btnBack)
+        fabFavorite = findViewById(R.id.fabFavorite)
 
-        // Back button listener
         backButton.setOnClickListener {
             onBackPressed()
         }
 
         readMoreButton.setOnClickListener {
-            articleUrl?.let { url ->
+            currentArticle?.url?.let { url ->
                 val intent = Intent(this, WebViewActivity::class.java)
                 intent.putExtra("url", url)
                 startActivity(intent)
@@ -59,15 +73,68 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFavoriteButton() {
+        fabFavorite.setOnClickListener {
+            toggleFavorite()
+        }
+    }
+
+    private fun checkFavoriteStatus() {
+        currentArticle?.let { article ->
+            lifecycleScope.launch {
+                isFavorite = viewModel.isFavorite(article.url)
+                updateFavoriteIcon()
+            }
+        }
+    }
+
+    private fun toggleFavorite() {
+        currentArticle?.let { article ->
+            isFavorite = !isFavorite
+            updateFavoriteIcon()
+
+            if (isFavorite) {
+                viewModel.addToFavorites(article)
+                Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.removeFromFavorites(article.url)
+                Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateFavoriteIcon() {
+        if (isFavorite) {
+            fabFavorite.setImageResource(R.drawable.ic_favorite_filled)
+        } else {
+            fabFavorite.setImageResource(R.drawable.ic_favorite_border)
+        }
+    }
+
     private fun displayArticle() {
         val title = intent.getStringExtra("title")
         val author = intent.getStringExtra("author")
         val source = intent.getStringExtra("source")
+        val sourceId = intent.getStringExtra("sourceId")
         val imageUrl = intent.getStringExtra("imageUrl")
         val content = intent.getStringExtra("content")
         val description = intent.getStringExtra("description")
         val publishedAt = intent.getStringExtra("publishedAt")
-        articleUrl = intent.getStringExtra("url")
+        val articleUrl = intent.getStringExtra("url")
+
+        // Create Article object
+        if (articleUrl != null) {
+            currentArticle = Article(
+                source = Source(sourceId, source ?: "Unknown"),
+                author = author,
+                title = title ?: "No Title",
+                description = description,
+                url = articleUrl,
+                urlToImage = imageUrl,
+                publishedAt = publishedAt ?: "",
+                content = content
+            )
+        }
 
         titleTextView.text = title ?: "No Title"
         authorTextView.text = "By ${author ?: "Unknown"}"
