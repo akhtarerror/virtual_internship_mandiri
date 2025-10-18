@@ -11,13 +11,38 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageDetail"
+        <!-- Image dengan Back Button Overlay -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="News Detail Image"
-            app:srcCompat="@drawable/ic_placeholder"/>
+            android:layout_height="250dp">
+
+            <ImageView
+                android:id="@+id/imageDetail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="News Detail Image"
+                app:srcCompat="@drawable/ic_placeholder"/>
+
+            <!-- Gradient overlay untuk visibility button -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/gradient_overlay"/>
+
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:background="@drawable/bg_back_button"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:contentDescription="Back"
+                android:padding="8dp"
+                android:tint="#FFFFFF"/>
+
+        </FrameLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package dev.rakamin.newsapp
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var descriptionTextView: TextView
     private lateinit var contentTextView: TextView
     private lateinit var readMoreButton: Button
+    private lateinit var backButton: ImageButton
 
     private var articleUrl: String? = null
 
@@ -25,8 +27,8 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "News Detail"
+        // Sembunyikan action bar karena kita pakai custom back button
+        supportActionBar?.hide()
 
         initViews()
         displayArticle()
@@ -41,6 +43,12 @@ class DetailActivity : AppCompatActivity() {
         descriptionTextView = findViewById(R.id.textDescription)
         contentTextView = findViewById(R.id.textContent)
         readMoreButton = findViewById(R.id.btnReadMore)
+        backButton = findViewById(R.id.btnBack)
+
+        // Back button listener
+        backButton.setOnClickListener {
+            onBackPressed()
+        }
 
         readMoreButton.setOnClickListener {
             articleUrl?.let { url ->
@@ -66,16 +74,13 @@ class DetailActivity : AppCompatActivity() {
         sourceTextView.text = source ?: "Unknown Source"
         dateTextView.text = formatDate(publishedAt)
 
-        // Tampilkan description
         if (!description.isNullOrEmpty() && description != "null") {
             descriptionTextView.text = description
         } else {
             descriptionTextView.text = "No description available"
         }
 
-        // Tampilkan content tanpa batasan karakter
         if (!content.isNullOrEmpty() && content != "null") {
-            // Hapus notasi +xxxx chars dari NewsAPI
             val cleanContent = content.replace(Regex("\\[\\+\\d+ chars\\]"), "")
             contentTextView.text = cleanContent
         } else {
@@ -102,10 +107,5 @@ class DetailActivity : AppCompatActivity() {
         } catch (e: Exception) {
             dateString
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
     }
 }
