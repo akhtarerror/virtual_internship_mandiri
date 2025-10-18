@@ -44,4 +44,18 @@
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_connection">No Connection</string>
+    <string name="no_connection_title">No Internet Connection</string>
+    <string name="no_connection_message">Please check your internet connection\nand try again</string>
+
+    <string name="timeout_title">Connection Timeout</string>
+    <string name="timeout_message">The request took too long to respond.\nPlease try again</string>
+
+    <string name="server_error_title">Server Error</string>
+    <string name="server_error_message">Something went wrong on our end.\nPlease try again later</string>
+
+    <string name="error_title">Oops! Something went wrong</string>
+    <string name="error_message">We couldn\'t load the news.\nPlease try again</string>
+
+    <string name="retry">Try Again</string>
 </resources>

@@ -84,4 +84,8 @@ dependencies {
 
 // Optional - KTX Extensions (suspend function, Flow, dll)
     implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
